@@ -1,0 +1,22 @@
+
+.navbar
+{
+    max-width: 1250px;
+    padding: 15px 50px;
+    margin: auto;
+
+    /* BOLD THE TEXT */
+    font-family: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    
+    display: flex;
+    justify-content: center;
+}
+
+.navbarlink
+{
+    padding: 5px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    border: 1px solid transparent;
+}

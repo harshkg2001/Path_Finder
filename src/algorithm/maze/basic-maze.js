@@ -1,27 +1,36 @@
-// the function takes the size of the grid as paramters, i.e., rows and columns
+// Define a function called basicMaze that takes two parameters: rows and cols
 function basicMaze(rows, cols)
 {
-    // the array that will store pair(r_i, c_i) that will be blacked.
-    var arr=[];
-    for(var r=0; r<rows; r++)
+    // Create an empty array to store maze coordinates
+    var arr = [];
+    
+    // Loop through each row
+    for (var r = 0; r < rows; r++)
     {
-        // set for distinct values of (r_i, c_i)
-        const st=new Set()
-
-        // here columns can be divided by any numbers. This will decide, how compact the walls are.
-        for(var j=0; j<cols/4; j++)
+        // Create an empty Set to store unique column values for each row
+        const st = new Set();
+        
+        // Loop a fraction of cols/4 times
+        for (var j = 0; j < cols / 4; j++)
         {
-            var c=Math.floor((Math.random()*100));
-            c%=cols;
+            // Generate a random number between 0 and 99
+            var c = Math.floor((Math.random() * 100));
+            
+            // Calculate the modulo to ensure c is within the range of cols
+            c %= cols;
+            
+            // Add the random column value to the Set
             st.add(c);
         }
-
-        // Finally the elements of the set are pushed in the array.
-        for(let c of st)
-            arr.push({r, c});
+        
+        // Loop through the Set elements and push {r, c} objects into the arr array
+        for (let c of st)
+            arr.push({ r, c });
     }
-    // The array is returned.
+    
+    // Return the array containing maze coordinates
     return arr;
 }
 
+// Export the basicMaze function as the default export of the module
 export default basicMaze;

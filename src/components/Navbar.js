@@ -1,7 +1,8 @@
 import React from 'react'
 import '../styles/navbar.css';
 
-function Navbar({msg}) {
+function Navbar({msg})
+{
   return (
     <div style={{ backgroundColor: "rgba(10, 25, 47, 1)", margin: 'auto'}}>
       <nav className="navbar">

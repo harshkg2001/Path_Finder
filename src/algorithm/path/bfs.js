@@ -1,71 +1,72 @@
-
-var dx=[0, -1, 0, 1]
-var dy=[1, 0, -1, 0]
+// Define movement directions: up, left, down, right
+var dx = [0, -1, 0, 1];
+var dy = [1, 0, -1, 0];
 
 function BFS(Grid, startNode, endNode, N, M)
 {
-    var grid = new Array(N);  // newArray - for no reference state-Grid;
-    for(let i=0; i<N; i++)
+    var grid = new Array(N);
+    
+    for (let i = 0; i < N; i++)
     {
         let arr = [];
-        for(let j=0; j<M; j++){
-            arr.push({x: -1, y: -1, visited: 0});
-        }
-        grid[i] = arr;
+        for (let j = 0; j < M; j++)
+            arr.push({ x: -1, y: -1, visited: 0 });
+        
+            grid[i] = arr;
     }
     var visitedNodes = [];
     var path = [];
 
     var queue = [];
-    queue.push({x : startNode.x, y: startNode.y});
+    
+    // Start BFS from the start node
+    queue.push({ x: startNode.x, y: startNode.y });
     grid[startNode.x][startNode.y].visited = 1;
-    visitedNodes.push({x: startNode.x, y: startNode.y});
+    visitedNodes.push({ x: startNode.x, y: startNode.y });
 
-    while(queue.length>0)
+    while (queue.length > 0)
     {
-        //shift an inbuilt Array method that removes the first element and returns the removed element.
-        var front=queue.shift();
+        // Take the first element from the queue
+        var front = queue.shift();
+        // .shift(): This function removes the first element from the array and returns that element.
 
-        for(let i=0; i<4; i++)
+        for (let i = 0; i < 4; i++)
         {
-            var x=dx[i]+front.x;
-            var y=dy[i]+front.y;
+            var x = dx[i] + front.x;
+            var y = dy[i] + front.y;
 
-            if(x===endNode.x && y===endNode.y)
+            // Check if the current node is the end node
+            if (x === endNode.x && y === endNode.y)
             {
-                visitedNodes.push({x,y});
+                // Path found, trace back and return the path
+                visitedNodes.push({ x, y });
                 grid[x][y].x = front.x;
                 grid[x][y].y = front.y;
+                var tmp = { x, y };
+                path.push({ x: tmp.x, y: tmp.y });
                 
-                var tmp = {x,y};
-                
-                //not reference variable
-                path.push({x: tmp.x, y: tmp.y});   
-
-                while(grid[tmp.x][tmp.y].x!==-1  || grid[tmp.x][tmp.y].y!==-1){
+                while (grid[tmp.x][tmp.y].x !== -1 || grid[tmp.x][tmp.y].y !== -1) {
                     let tmpX = grid[tmp.x][tmp.y].x;
                     let tmpY = grid[tmp.x][tmp.y].y;
                     tmp.x = tmpX;
                     tmp.y = tmpY;
-                    path.push({x: tmp.x, y: tmp.y});
+                    path.push({ x: tmp.x, y: tmp.y });
                 }
-                return {path, visitedNodes, error:""};
+                return { path, visitedNodes, error: "" };
             }
-
-            // 0 !== false  output: true
-            else 
-            if(x>=0 && y>=0 && x<N && y<M && !Grid[x][y].isWall && !grid[x][y].visited)
+            // Check if the current node is valid and not visited
+            else if (x >= 0 && y >= 0 && x < N && y < M && !Grid[x][y].isWall && !grid[x][y].visited)
             {
+                // Mark the cell as visited, record its previous node's coordinates
                 grid[x][y].visited = 1;
-                visitedNodes.push({x,y});
-
+                visitedNodes.push({ x, y });
                 grid[x][y].x = front.x;
                 grid[x][y].y = front.y;
-                queue.push({x,y});
+                queue.push({ x, y });
             }
         }
     }
-    return {path, visitedNodes, error:"Path is not found"};
+    return { path, visitedNodes, error: "Path is not found" };
 }
 
 export default BFS;

@@ -10,27 +10,19 @@ import recursiveDivision from '../algorithm/maze/recursive_division';
 import Navbar from '../components/Navbar';
 import Footer from "../components/Footer"
 
-// super(props);
-// call the super class constructor and pass in the props parameter
-
-// size of the grid.
 var rows = 17;
 var cols = 31;
 
-// positions of the starting and ending icons.
 var START_NODE_ROW = 4, START_NODE_COL = 6;
 var END_NODE_ROW = rows - 6, END_NODE_COL = cols - 6;
 
-// initial row and coloumn. But what for?
 var InitSR = START_NODE_ROW, InitSC = START_NODE_COL;
 var InitER = END_NODE_ROW, InitEC = END_NODE_COL;
 
-// animate time in milliseconds.
 var animateTime = 35;
 
-
-function App() {
-    // what is array destructuring? maybe used here.
+function App()
+{
     const [Grid, setGrid] = useState([]);
 
     const [isMousePress, setIsMousePress] = useState(false);
@@ -38,13 +30,14 @@ function App() {
     const [pathID, setPathID] = useState(0);
     const [animateType, setAnimateTimeType] = useState(2);
 
-    // to initialize grid when the code runs for the first time. other use?
+    // This useEffect hook runs once when the component mounts, initializing the grid.
     useEffect(() => {
         gridInitialize();
     }, [])
 
-    // function to initialize the grid. later used in the above useEffect.
-    function gridInitialize() {
+    // Function to initialize a 2D grid.
+    function gridInitialize()
+    {
         var grid = new Array(rows);
         for (let i = 0; i < rows; i++)
             grid[i] = new Array(cols);
@@ -52,13 +45,18 @@ function App() {
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++)
                 grid[i][j] = new Spot(i, j);
+
+            // Spot is a class that calls a constructor and passes the row and column number as parameters.
+            // The constructor then initializes this new object with some values based on the values of 'i' and 'j'
+            // It's features include x, y, isWall, isStart, isEnd
         }
         setGrid(grid);
     }
 
-    // algorithm for the animation. know in full detail how it is used.
-    async function animateVisitedNodes(visitedNodes) {
-        for (let i = 0; i < visitedNodes.length; i++) {
+    async function animateVisitedNodes(visitedNodes)
+    {
+        for (let i = 0; i < visitedNodes.length; i++) 
+        {
             const node = visitedNodes[i];
             await waitForAnimation(animateTime);
 
@@ -73,19 +71,26 @@ function App() {
         }
     }
 
-    async function animateShortestPath(pathNode) {
+    // This is an asynchronous function that animates a shortest path represented by an array of nodes.
+    // It receives a reversed pathNode array as input.
+    async function animateShortestPath(pathNode)
+    {
+        // Reverse the order of nodes in the path for proper animation.
         pathNode.reverse();
 
-        for (let i = 0; i < pathNode.length; i++) {
+        // Iterate through each node in the path.
+        for (let i = 0; i < pathNode.length; i++)
+        {
             const node = pathNode[i];
+
+            // Wait for a specified animation time before proceeding to the next iteration.
             await waitForAnimation(animateTime);
 
+            // Depending on the position of the node in the path, update its CSS class to represent its role.
             if (i === 0)
                 document.getElementById(`row${node.x}_col${node.y}`).className = "shortestPath START_NODE";
-
             else if (i + 1 === pathNode.length)
                 document.getElementById(`row${node.x}_col${node.y}`).className = "shortestPath END_NODE";
-
             else
                 document.getElementById(`row${node.x}_col${node.y}`).className = "shortestPath";
         }
@@ -103,7 +108,8 @@ function App() {
         var endNode = Grid[END_NODE_ROW][END_NODE_COL];
 
         var obj;
-        switch (pathID) {
+        switch (pathID)
+        {
             case 1:
                 obj = Astar(Grid, startNode, endNode, rows, cols);
                 await animateVisitedNodes(obj.close_list);
@@ -129,33 +135,38 @@ function App() {
         }
         document.getElementsByTagName('select')[0].disabled = false;
         document.getElementsByTagName('select')[1].disabled = false;
-        for (let i = 0; i < btns.length; i++) {
+        for (let i = 0; i < btns.length; i++)
+        {
             btns[i].disabled = false;
         }
     }
 
     const mazeGenerator = async (ar) => {
-        for (var i = 0; i < ar.length; i++) {
-            if ((ar[i].r === START_NODE_ROW && ar[i].c === START_NODE_COL) ||
-                (ar[i].r === END_NODE_ROW && ar[i].c === END_NODE_COL)) continue;
+        for (var i = 0; i < ar.length; i++)
+        {
+            if ((ar[i].r === START_NODE_ROW && ar[i].c === START_NODE_COL) || (ar[i].r === END_NODE_ROW && ar[i].c === END_NODE_COL))
+                continue;
+            
             await waitForAnimation(animateTime);
             createWall(ar[i].r, ar[i].c);
         }
     }
 
     const makeAllCellAsAWall = () => {
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                if (!((i === START_NODE_ROW && j === START_NODE_COL) || (i === END_NODE_ROW && j === END_NODE_COL))) {
+        for (let i = 0; i < rows; i++)
+        {
+            for (let j = 0; j < cols; j++)
+            {
+                if (!((i === START_NODE_ROW && j === START_NODE_COL) || (i === END_NODE_ROW && j === END_NODE_COL)))
                     createWall(i, j);
-                }
             }
         }
     }
 
     const mazeHandle = async () => {
         var arr = [];
-        switch (mazeID) {
+        switch (mazeID)
+        {
             case 1:
                 arr = basicMaze(rows, cols);
                 mazeGenerator(arr);
@@ -165,7 +176,7 @@ function App() {
                 arr = Randomized_dfs(rows, cols);
                 mazeGenerator(arr);
                 break;
-            case 3: // recursive division
+            case 3:
                 arr = recursiveDivision(rows, cols);
                 mazeGenerator(arr);
                 break;
@@ -174,12 +185,16 @@ function App() {
     }
 
     const clearPathHandle = () => {
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                if (i === START_NODE_ROW && j === START_NODE_COL) {
+        for (let i = 0; i < rows; i++)
+        {
+            for (let j = 0; j < cols; j++)
+            {
+                if (i === START_NODE_ROW && j === START_NODE_COL)
+                {
                     document.getElementById(`row${i}_col${j}`).className = "square START_NODE";
                 }
-                else if (i === END_NODE_ROW && j === END_NODE_COL) {
+                else if (i === END_NODE_ROW && j === END_NODE_COL)
+                {
                     document.getElementById(`row${i}_col${j}`).className = "square END_NODE";
                 }
                 else if (!Grid[i][j].isWall)
@@ -189,9 +204,6 @@ function App() {
     }
 
     const createWall = (row, col) => {
-        /*
-            ***** the concept should be known array reference and copy *****
-        */
         var newGrid = [...Grid] // array copy
         var node = newGrid[row][col];
         node.isWall = !node.isWall;
@@ -206,7 +218,8 @@ function App() {
         }
     }
     const onMouseEnter = (row, col) => {
-        if (isMousePress === true && isValid(row, col)) {
+        if (isMousePress === true && isValid(row, col))
+        {
             createWall(row, col);
         }
     }
@@ -214,9 +227,12 @@ function App() {
         setIsMousePress(() => false);
     }
     const animationTimeHandle = (type) => {
-        if (type === 1) animateTime = 8;
-        else if (type === 2) animateTime = 35;
-        else animateTime = 80;
+        if (type === 1)
+            animateTime = 8;
+        else if (type === 2)
+            animateTime = 35;
+        else
+            animateTime = 80;
         setAnimateTimeType(type);
     }
 
@@ -232,7 +248,8 @@ function App() {
             START_NODE_ROW = r;
             START_NODE_COL = c;
         }
-        else {
+        else
+        {
             let newGrid = [...Grid] // array copy
             let preEndNode = newGrid[END_NODE_ROW][END_NODE_COL];
             let curEndNode = newGrid[r][c];
@@ -247,8 +264,6 @@ function App() {
 
     return (
         <>
-            {/* ALL BUTTONS ARE HERE */}
-
             <div id="Container-blur">
                 <Navbar msg='Path Finder Visualizer'></Navbar>
                 <div className='path-container'>
@@ -268,18 +283,15 @@ function App() {
                                     </select>
                                 </div>
                             </div>
-                            {/* -------------------------------------------------------------------------------------------------------------------------- */}
-                            {/* Fast-slow buttons. Passing number in the animationTimeHandle as time for animation. */}
+                           
                             <div className='path-speed-btns'>
                                 <button className={`button-1 ${animateType === 1 && 'curr-speed-btn'}`} onClick={() => animationTimeHandle(1)}>Fast</button>
                                 <button className={`button-1 ${animateType === 2 && 'curr-speed-btn'}`} onClick={() => animationTimeHandle(2)}>Average</button>
                                 <button className={`button-1 ${animateType === 3 && 'curr-speed-btn'}`} onClick={() => animationTimeHandle(3)}>Slow</button>
                             </div>
-                            {/* -------------------------------------------------------------------------------------------------------------------------- */}
                         </div>
+
                         <div>
-                            {/* -------------------------------------------------------------------------------------------------------------------------- */}
-                            {/* maze design area. */}
                             <div style={{ "display": "flex", "margin": "6px auto" }}>
                                 <select className='my-drop-down' value={mazeID} onChange={(e) => { setMazeID(parseInt(e.target.value)) }}>
                                     <option className='my-drop-down-option' disabled value="0">Select Maze</option>
@@ -290,9 +302,7 @@ function App() {
                                 <button className='button-4 start-maze-btn' onClick={mazeHandle}>Create Maze</button>
                                 <button className='button-4' onClick={gridInitialize}>Clear walls</button>
                             </div>
-                            {/* -------------------------------------------------------------------------------------------------------------------------- */}
-                            {/* -------------------------------------------------------------------------------------------------------------------------- */}
-                            {/* clear path and reset board options. */}
+            
                             <div style={{ "display": "flex" }}>
                                 <button className='button-4' onClick={clearPathHandle}>Clear path</button>
                                 <button className='button-4' onClick={() => {
@@ -306,10 +316,9 @@ function App() {
                                     Reset board
                                 </button>
                             </div>
-                            {/* -------------------------------------------------------------------------------------------------------------------------- */}
                         </div>
                     </div>
-                    {/* -------------------------------------------------------------------------------------------------------------------------- */}
+                    
                     <div className='grid'>
                         <div onMouseLeave={() => { setIsMousePress(false) }}>
                             {/* JSX Node Of Grid (2D Array) */}
@@ -326,7 +335,6 @@ function App() {
                             })}
                         </div>
                     </div>
-                    {/* -------------------------------------------------------------------------------------------------------------------------- */}
                 </div>
             </div>
             <Footer></Footer>
@@ -334,8 +342,10 @@ function App() {
     )
 }
 
-class Spot {
-    constructor(i, j) {
+class Spot
+{
+    constructor(i, j)
+    {
         this.x = i;
         this.y = j;
         this.isWall = false;
@@ -343,26 +353,6 @@ class Spot {
         this.isEnd = (i === END_NODE_ROW && j === END_NODE_COL);
     }
 }
-
-/*
-
-class Spot: Defines a new class named Spot.
-
-constructor(i, j): This is the constructor. It takes two parameters i and j, which represent the row and column indices of the spot in a grid.
-
---------------------------------------------------------------------------------------------------------------------------------
-this.x = i; and this.y = j;: These lines assign the i parameter to the x property and the j parameter to the y property of the created object. This essentially stores the coordinates of the spot in the grid.
---------------------------------------------------------------------------------------------------------------------------------
-
-this.isWall = false;: This property seems to indicate whether the spot is a wall or an obstacle in the grid. It's assumed to be initially not a wall.
-
-this.isStart = (i === START_NODE_ROW && j === START_NODE_COL);: This line calculates whether the current spot is the starting node. It checks if the i and j coordinates match predefined START_NODE_ROW and START_NODE_COL values. If they match, the isStart property is set to true.
-
-this.isEnd = (i === END_NODE_ROW && j === END_NODE_COL);: Similar to the previous line, this one checks if the spot is the ending node by comparing the coordinates with predefined END_NODE_ROW and END_NODE_COL values. If they match, the isEnd property is set to true.
-
-START_NODE_ROW, START_NODE_COL, END_NODE_ROW, and END_NODE_COL are defined elsewhere in the code and represent the row and column indices of the start and end nodes in the grid.
-
- */
 
 function Node({ pv }) {
     const { x, y, isStart, isEnd, isWall, onMouseDown, onMouseEnter, onMouseUp, setStartEndNode } = pv;
@@ -400,7 +390,8 @@ function Node({ pv }) {
             </div>
         )
     }
-    else {
+    else
+    {
         return (
             <div onMouseDown={(e) => {
                 e.preventDefault(); // it is necessary
@@ -430,7 +421,8 @@ function Node({ pv }) {
     }
 }
 
-async function waitForAnimation(time) {
+async function waitForAnimation(time)
+{
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve('');
@@ -438,19 +430,6 @@ async function waitForAnimation(time) {
     })
 }
 
-/*
-async function waitForAnimation(time): This line defines an async function named waitForAnimation that takes a single parameter time. The async keyword indicates that this function will always return a Promise.
-
-return new Promise((resolve) => { ... });: Within the waitForAnimation function, a new Promise is created. The Promise takes a single function as an argument, often referred to as the "executor function". This function is passed two arguments, resolve and reject, which are functions to fulfill or reject the Promise.
-
-setTimeout(() => { resolve(''); }, time);: Inside the executor function, a setTimeout function is used to introduce a delay before resolving the Promise. The setTimeout function takes two arguments: a callback function and the time (in milliseconds) to wait before executing the callback.
-
-The callback function is defined using an arrow function: () => { resolve(''); }. Inside this callback, the resolve function is called. The empty string '' is passed to resolve, but in this context, it doesn't carry any significant meaning; it's just a placeholder for the resolution value.
-
-The time argument is the amount of time the function will wait before resolving the Promise. It's in milliseconds.
-
-resolve('');: This line inside the callback function calls the resolve function of the Promise. This effectively fulfills the Promise, indicating that the asynchronous operation (in this case, waiting for a specified time) has completed successfully. The empty string '' is provided as a value to the resolution.
-*/ 
 const isValid = (r, c) => {
     if ((r === START_NODE_ROW && c === START_NODE_COL) || (r === END_NODE_ROW && c === END_NODE_COL)) return 0;
     else return 1;
